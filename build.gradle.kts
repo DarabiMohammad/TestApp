@@ -2,5 +2,6 @@
 plugins {
     id("com.android.application") version "7.2.2" apply false
     id("org.jetbrains.kotlin.android") version "1.7.10" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.4.32" apply false
     id("com.google.dagger.hilt.android") version "2.44" apply false
 }

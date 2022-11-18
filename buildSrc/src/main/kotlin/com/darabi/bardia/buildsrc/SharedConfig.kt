@@ -23,11 +23,14 @@ object Dependencies {
     private const val CORE_VERSION = "1.9.0"
     private const val APPCOMPAT_VERSION = "1.5.1"
     private const val COROUTINES_VERSION = "1.4.2"
-    private const val WORKMANAGER_VERSION = "2.7.1"
+    private const val WORK_MANAGER_VERSION = "2.7.1"
+    private const val STARTUP_VERSION = "1.1.1"
     private const val CONSTRAINT_VERSION = "2.1.4"
     private const val MATERIAL_VERSION = "1.7.0"
     private const val LIFECYCLE_VERSION = "2.2.0"
     private const val HILT_VERSION = "2.44"
+    private const val HILT_WORK_VERSION = "1.0.0"
+    private const val GSON_VERSION = "2.8.8"
 
     private val libs = listOf (
 
@@ -37,10 +40,12 @@ object Dependencies {
         "androidx.activity:activity-ktx:${APPCOMPAT_VERSION}",
         "androidx.fragment:fragment-ktx:${APPCOMPAT_VERSION}",
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:${COROUTINES_VERSION}",
-        "androidx.work:work-runtime-ktx:$WORKMANAGER_VERSION",
+        "androidx.work:work-runtime-ktx:$WORK_MANAGER_VERSION",
+        "androidx.startup:startup-runtime:$STARTUP_VERSION",
 
         // di
         "com.google.dagger:hilt-android:${HILT_VERSION}",
+        "androidx.hilt:hilt-work:${HILT_WORK_VERSION}",
 
         // design libs
         "androidx.constraintlayout:constraintlayout:${CONSTRAINT_VERSION}",
@@ -50,11 +55,15 @@ object Dependencies {
         "androidx.lifecycle:lifecycle-viewmodel-ktx:${LIFECYCLE_VERSION}",
         "androidx.lifecycle:lifecycle-extensions:${LIFECYCLE_VERSION}",
         "androidx.lifecycle:lifecycle-livedata-ktx:${LIFECYCLE_VERSION}",
+
+        // gson
+        "com.google.code.gson:gson:${GSON_VERSION}",
     )
 
     private val processors = listOf (
         // di
         "com.google.dagger:hilt-android-compiler:$HILT_VERSION",
+        "androidx.hilt:hilt-compiler:$HILT_WORK_VERSION",
     )
 
     fun DependencyHandler.dependencies() {

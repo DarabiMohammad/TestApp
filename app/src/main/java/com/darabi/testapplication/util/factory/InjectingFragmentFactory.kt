@@ -12,6 +12,7 @@ class InjectingFragmentFactory @Inject constructor (
 ) : FragmentFactory() {
 
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+
         val fragmentClass = loadFragmentClass(classLoader, className)
 
         val creator = providerMap[fragmentClass] ?: providerMap.entries.firstOrNull {

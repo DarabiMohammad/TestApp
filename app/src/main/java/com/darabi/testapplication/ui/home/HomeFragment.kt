@@ -1,22 +1,28 @@
 package com.darabi.testapplication.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
 import com.darabi.testCustomView.ui.base.BaseFragment
 import com.darabi.testapplication.databinding.FragmentHomeBinding
 import com.darabi.testapplication.model.Month
 import com.darabi.testapplication.repository.ResponseWrapper
+import com.darabi.testapplication.ui.home.worker.DelayedWorker
 import com.darabi.testapplication.util.fadeIn
 import com.darabi.testapplication.util.fadeOut
+import com.darabi.testapplication.util.invisible
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment @Inject constructor(
     private val recyclerViewAdapter: MonthRecyclerViewAdapter
-) : BaseFragment(), Observer<ResponseWrapper<List<Month>>> {
+) : BaseFragment(), Observer<WorkInfo> {
 
     private val viewModel: HomeViewModel by viewModels()
 
@@ -25,14 +31,26 @@ class HomeFragment @Inject constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getMonths().observe(viewLifecycleOwner, this)
+        viewModel.getMonths(5).observe(viewLifecycleOwner, this)
     }
 
-    override fun onChanged(result: ResponseWrapper<List<Month>>) {
+    override fun onChanged(workInfo: WorkInfo) {
 
-        when (result) {
-            is ResponseWrapper.Data -> initViews(result.data)
-            is ResponseWrapper.Error -> showToast("${result.error.message}")
+        when (workInfo.state) {
+
+            WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING -> {
+                binding.prgLoading.fadeIn()
+                binding.rcvMonths.invisible()
+            }
+
+            WorkInfo.State.SUCCEEDED -> {
+                initViews(viewModel.fromJson(workInfo.outputData.getString(DelayedWorker.LIST_OF_MONTH)))
+            }
+
+            else -> {
+                binding.prgLoading.fadeOut()
+                binding.rcvMonths.invisible()
+            }
         }
     }
 

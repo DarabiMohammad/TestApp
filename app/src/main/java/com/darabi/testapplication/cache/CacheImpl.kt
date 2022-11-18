@@ -1,36 +1,26 @@
 package com.darabi.testapplication.cache
 
+import com.darabi.testapplication.cache.database.DataBase
 import com.darabi.testapplication.model.Month
+import com.darabi.testapplication.repository.Repository
 import com.darabi.testapplication.repository.ResponseWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class CacheImpl @Inject constructor() : Cache {
+/**
+ * The [Cache] interface represents all operations related to local persisting data.
+ * the data flow from local storages (e.g, shared prefs, sqlite database, shared storage of the device or etc)
+ * must be sent to [Repository] through this class. in other words, this class decides which type of
+ * mentioned storages must be used for getting data from local.
+ */
+class CacheImpl @Inject constructor(
+    private val dataBase: DataBase
+) : Cache {
 
     override suspend fun getMonths(): ResponseWrapper<List<Month>> = safeCall {
-        generateFakeMonths()
+        dataBase.getMonths()
     }
-
-    /**
-     * this function mocks data fetching. list of [Month] can be stored on shared prefs or
-     * local database, which in this case, for simplicity is being generated in this function.
-     */
-    private fun generateFakeMonths(): List<Month> = listOf(
-
-        Month("January", 1),
-        Month("February", 2),
-        Month("March", 3),
-        Month("April", 4),
-        Month("May", 5),
-        Month("June", 6),
-        Month("July", 7),
-        Month("August", 8),
-        Month("September", 9),
-        Month("October", 10),
-        Month("November", 11),
-        Month("December", 12),
-    )
 
     /**
      * this function wraps all calls to local storage e.g. shared prefs of database.
@@ -40,7 +30,7 @@ class CacheImpl @Inject constructor() : Cache {
      *
      * @return [ResponseWrapper] which may include data or thrown error.
      */
-    private suspend inline fun <T> safeCall(crossinline function: () -> T): ResponseWrapper<T> = try {
+    private suspend inline fun <T> safeCall(crossinline function: suspend () -> T): ResponseWrapper<T> = try {
 
         withContext(Dispatchers.IO) {
 
